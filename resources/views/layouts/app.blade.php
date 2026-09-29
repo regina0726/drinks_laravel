@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="hu">
 <head>
@@ -16,5 +17,6 @@
         {{ config('app.name', 'LaravelApp') }} v{{ config('app.version') }} (PHP v{{ PHP_VERSION }})
     </footer>
 </body>
+</html>
 </html>
 
