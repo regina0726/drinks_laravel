@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class DrinkType extends Model
 {
-    public $timestamps= false;
-    protected $fillable = ['name'];
+    public $timestamps = false;
+
     protected $table = 'drinktypes';
+
+    protected $fillable = ['name'];
 
     public function brands()
     {
-    return $this->hasMany(Brand::class, 'drinktype_id');
+        return $this->hasMany(Brand::class, 'drinktype_id');
     }
 }

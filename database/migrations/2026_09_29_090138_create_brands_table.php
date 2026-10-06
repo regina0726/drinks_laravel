@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
-             $table ->foreignId('drinktype_id')
-                    ->constrained('drinktypes')
-                    ->onDelete('cascade');
+            $table->foreignId('drinktype_id')
+                ->constrained('drinktypes')
+                ->onDelete('cascade');
 
             $table->string('name');
-            $table->string('alcohol_percent');
+            $table->decimal('alcohol_percent', 4, 1);
         });
     }
 

@@ -1,52 +1,46 @@
 @extends('layouts.app')
 
-@section('title', __('Ital Kategóriák'))
+@section('title', __('Ital kategóriák'))
 
 @section('content')
 <h1>{{ __('Kategóriák') }}</h1>
 
-@include('layouts.toolbar', [
-      'isAuthenticated' => $isAuthenticated,
-      'routes' => [
-          'create' => route('drinktypes.create'),
-          'csv' => '#',
-          'pdf' => '#',
-          'mail' => '#',
-      ]
-  ])
+<div class="toolbar">
+    <a href="{{ route('drinktypes.create') }}">{{ __('Új kategória') }}</a>
+</div>
 
-  @include('layouts.flash')
+@include('components.search-form', ['action' => route('drinktypes.index')])
+@include('components.flash')
 
-  <table>
-      <thead>
-      <tr>
-          <th>#</th>
-          <th>{{ __('Név') }}</th>
-          <th>{{ __('Műveletek') }}</th>
-      </tr>
-      </thead>
-      <tbody>
-      @forelse($entities as $maker)
-          <tr>
-              <td>{{ $maker->id }}</td>
-              <td>{{ $maker->name }}</td>
-              <td>
-                  <a href="{{ route('drinktypes.show', $maker->id) }}">{{ __('Megtekintés') }}</a>
-                  @if($isAuthenticated)
-                      <a href="{{ route('drinktypes.edit', $maker->id) }}">{{ __('Szerkesztés') }}</a>
-                      <form action="{{ route('drinktypes.destroy', $maker->id) }}" method="POST">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit">{{ __('Törlés') }}</button>
-                      </form>
-                  @endif
-              </td>
-          </tr>
-      @empty
-          <tr>
-              <td colspan="3">{{ __('Nincs ilyen kategória a rendszerben.') }}</td>
-          </tr>
-      @endforelse
-      </tbody>
-  </table>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>{{ __('Név') }}</th>
+        <th>{{ __('Műveletek') }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    @forelse($drinktypes as $drinktype)
+        <tr>
+            <td>{{ $drinktype->id }}</td>
+            <td>{{ $drinktype->name }}</td>
+            <td>
+                <a href="{{ route('drinktypes.show', $drinktype) }}">{{ __('Megtekintés') }}</a>
+                <a href="{{ route('drinktypes.edit', $drinktype) }}">{{ __('Szerkesztés') }}</a>
+                <form action="{{ route('drinktypes.destroy', $drinktype) }}" method="POST" class="inline"
+                      onsubmit="return confirm('{{ __('Biztosan törlöd? A kategória összes márkája is törlődni fog!') }}')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit">{{ __('Törlés') }}</button>
+                </form>
+            </td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="3">{{ __('Nincs ilyen kategória a rendszerben.') }}</td>
+        </tr>
+    @endforelse
+    </tbody>
+</table>
 @endsection

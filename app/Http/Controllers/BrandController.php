@@ -1,94 +1,83 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Brand;
 use App\Models\DrinkType;
-
 use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        $brands = Brand::with('drinktype')->get();
+        $brands = Brand::with('drinktype')
+            ->when($request->filled('needle'), function ($query) use ($request) {
+                $query->where('name', 'like', '%' . $request->input('needle') . '%');
+            })
+            ->orderBy('name')
+            ->get();
 
         return view('brands.index', compact('brands'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $drinktypes = DrinkType::all();
+        $drinktypes = DrinkType::orderBy('name')->get();
 
         return view('brands.create', compact('drinktypes'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'alcohol_percent' => ['required', 'string', 'max:20'],
-            'drinktype_id' => ['required', 'exists:drinktypes,id'],
-        ]);
+        $validated = $request->validate($this->rules());
 
         Brand::create($validated);
 
         return redirect()
             ->route('brands.index')
-            ->with('status', 'Márka létrehozva!');
+            ->with('success', 'Márka létrehozva!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Brand $brand)
     {
+        $brand->load('drinktype');
+
         return view('brands.show', compact('brand'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Brand $brand)
     {
-        return view('brands.edit', compact('brand'));
+        $drinktypes = DrinkType::orderBy('name')->get();
+
+        return view('brands.edit', compact('brand', 'drinktypes'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Brand $brand)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'alcohol_percent' => ['required', 'string', 'max:20'],
-            'drinktype_id' => ['required', 'exists:drinktypes,id'],
-        ]);
+        $validated = $request->validate($this->rules());
 
         $brand->update($validated);
 
         return redirect()
-        ->route('brands.index')
-        ->with('status', 'Márka frissítve!');
+            ->route('brands.index')
+            ->with('success', 'Márka frissítve!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Brand $brand)
     {
         $brand->delete();
 
         return redirect()
             ->route('brands.index')
-            ->with('status', 'Márka törölve!');
+            ->with('success', 'Márka törölve!');
+    }
+
+    private function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+            'alcohol_percent' => ['required', 'numeric', 'between:0,100'],
+            'drinktype_id' => ['required', 'exists:drinktypes,id'],
+        ];
     }
 }

@@ -20,13 +20,13 @@ class BrandSeeder extends Seeder
 
             Brand::create([
                 'name' => $drinktype->name . ' ital 1',
-                'alcohol_percent' => '10%',
+                'alcohol_percent' => 10,
                 'drinktype_id' => $drinktype->id,
             ]);
 
             Brand::create([
                 'name' => $drinktype->name . ' ital 2',
-                'alcohol_percent' => '15%',
+                'alcohol_percent' => 15,
                 'drinktype_id' => $drinktype->id,
             ]);
         }
